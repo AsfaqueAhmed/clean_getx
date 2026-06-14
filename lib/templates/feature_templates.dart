@@ -162,15 +162,13 @@ abstract class ${pascalName}Repository {
 ''';
 
   static String repositoryImpl(String name, String pascalName) =>
-      '''import 'package:dio/dio.dart';
-import '../../domain/repositories/${name}_repository.dart';
+      '''import '../../domain/repositories/${name}_repository.dart';
 import '../../domain/entities/${name}_entity.dart';
 import '../models/${name}_model.dart';
 
 class ${pascalName}RepositoryImpl implements ${pascalName}Repository {
-  final Dio dio;
 
-  ${pascalName}RepositoryImpl({required this.dio});
+  ${pascalName}RepositoryImpl();
 
   @override
   Future<List<${pascalName}Entity>> fetch${pascalName}List() async {
