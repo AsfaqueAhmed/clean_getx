@@ -59,14 +59,8 @@ class GeneratePageCommand extends Command {
         print('  • $file');
       }
 
-      final pascal = _toPascalCase(pageName);
       print('\n📝 Next steps:');
-      print('  1. Register the route in your app routes file:');
-      print('     GetPage(');
-      print("       name: '/$featureName/${pageName.replaceAll('_', '-')}',");
-      print('       page: () => const ${pascal}View(),');
-      print('       binding: ${pascal}Binding(),');
-      print('     ),');
+      print('  1. Route and page registered automatically in app_routes.dart & app_pages.dart');
       print(
         '  2. Implement controller logic in '
         '${generator.pagePath}/controller/${pageName}_controller.dart',
@@ -84,11 +78,4 @@ class GeneratePageCommand extends Command {
     }
   }
 
-  String _toPascalCase(String input) {
-    return input
-        .split('_')
-        .where((w) => w.isNotEmpty)
-        .map((word) => word[0].toUpperCase() + word.substring(1))
-        .join();
-  }
 }

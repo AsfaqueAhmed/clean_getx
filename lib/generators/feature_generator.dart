@@ -52,6 +52,7 @@ class FeatureGenerator {
     try {
       await _createDirectories();
       await _generateFiles();
+      await _registerRoute();
     } catch (e) {
       if (e is FeatureGeneratorException) rethrow;
       throw FeatureGeneratorException('Failed to generate feature: $e');
@@ -146,6 +147,65 @@ class FeatureGenerator {
         FeatureTemplates.repositoryImpl(name, pascalName),
       );
     }
+  }
+
+  Future<void> _registerRoute() async {
+    final routesDir = path.join(path.dirname(basePath), 'routes');
+    final routesFile = File(path.join(routesDir, 'app_routes.dart'));
+    final pagesFile = File(path.join(routesDir, 'app_pages.dart'));
+
+    final routeConstant = _toCamelCase(name);
+    final pascalName = NameUtils.toPascalCase(name);
+
+    if (routesFile.existsSync()) {
+      var content = await routesFile.readAsString();
+      if (!content.contains('static const $routeConstant')) {
+        final entry = "  static const $routeConstant = '/$name';\n";
+        final insertAt = content.lastIndexOf('}');
+        if (insertAt != -1) {
+          content = content.substring(0, insertAt) + entry + content.substring(insertAt);
+          await routesFile.writeAsString(content);
+        }
+      }
+    }
+
+    if (pagesFile.existsSync()) {
+      var content = await pagesFile.readAsString();
+      final bindingImport =
+          "import '../features/$name/presentation/$name/binding/${name}_binding.dart';\n";
+      final viewImport =
+          "import '../features/$name/presentation/$name/view/${name}_view.dart';\n";
+
+      if (!content.contains(bindingImport)) {
+        final classIndex = content.indexOf('\nclass AppPages');
+        if (classIndex != -1) {
+          content = content.substring(0, classIndex) +
+              '\n$bindingImport$viewImport' +
+              content.substring(classIndex);
+        }
+      }
+
+      if (!content.contains('AppRoutes.$routeConstant')) {
+        final getPage = '    GetPage(\n'
+            '      name: AppRoutes.$routeConstant,\n'
+            '      page: () => const ${pascalName}View(),\n'
+            '      binding: ${pascalName}Binding(),\n'
+            '    ),\n';
+        final closingAt = content.lastIndexOf('  ];');
+        if (closingAt != -1) {
+          content = content.substring(0, closingAt) + getPage + content.substring(closingAt);
+        }
+      }
+
+      await pagesFile.writeAsString(content);
+    }
+  }
+
+  String _toCamelCase(String snake) {
+    final parts = snake.split('_').where((w) => w.isNotEmpty).toList();
+    if (parts.isEmpty) return snake;
+    return parts.first +
+        parts.skip(1).map((w) => w[0].toUpperCase() + w.substring(1)).join();
   }
 
   Future<void> _createFile(String filePath, String content) async {

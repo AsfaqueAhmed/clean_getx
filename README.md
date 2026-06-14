@@ -35,7 +35,7 @@ Run once inside a freshly created Flutter project to generate the full clean
 GetX folder structure and rewrite `pubspec.yaml`.
 
 ```bash
-dart run /path/to/clean_getx/bin/clean_getx.dart init
+dart run bin/clean_getx.dart init
 ```
 
 | Option | Short | Default | Description |
@@ -48,7 +48,7 @@ dart run /path/to/clean_getx/bin/clean_getx.dart init
 **pubspec.yaml rewrite:**
 
 - Preserves all existing `dependencies` and `dev_dependencies` exactly as written
-- Always injects: `get`, `intl`
+- Always injects: `get`, `intl`, `equatable`
 - `--sqlite` injects: `sqflite`, `path`
 - `--storage` injects: `get_storage`
 - Removes all comments except the standard assets & fonts placeholders
@@ -97,7 +97,7 @@ lib/
 **Examples:**
 
 ```bash
-# Basic (get + intl only)
+# Basic (get + intl + equatable only)
 dart run bin/clean_getx.dart init
 
 # With SQLite
@@ -124,30 +124,30 @@ flutter pub get
 
 ---
 
-### 2. `generate` — Create a new feature
+### 2. `feature` — Create a new feature
 
 ```bash
-dart run bin/clean_getx.dart generate -n <feature_name>
+dart run bin/clean_getx.dart feature -n <feature_name>
 ```
 
 | Option | Short | Default | Description |
 |---|---|---|---|
 | `--name` | `-n` | required | Feature name in `snake_case` |
 | `--path` | `-p` | `lib/features` | Output directory |
-| `--with-model` | | `true` | Generate `data/models/<name>_model.dart` with JSON serialization |
-| `--with-repository` | | `true` | Generate abstract repository + Dio implementation |
+| `--no-model` | | `false` | Skip generating `data/models/<name>_model.dart` |
+| `--no-repository` | | `false` | Skip generating abstract repository + implementation |
 
 **Examples:**
 
 ```bash
 # Full feature (model + repository — default)
-dart run bin/clean_getx.dart generate -n user
+dart run bin/clean_getx.dart feature -n user
 
 # Presentation only (no model, no repository)
-dart run bin/clean_getx.dart generate -n dashboard --no-with-model --no-with-repository
+dart run bin/clean_getx.dart feature -n dashboard --no-model --no-repository
 ```
 
-**Generated structure (`generate -n user`):**
+**Generated structure (`feature -n user`):**
 
 ```
 lib/features/user/
@@ -173,6 +173,21 @@ lib/features/user/
         │   └── user_view.dart
         ├── widgets/
         └── user_exports.dart
+```
+
+**Route registration is automatic.** After the feature is generated, the CLI
+updates `lib/routes/app_routes.dart` and `lib/routes/app_pages.dart`:
+
+```dart
+// app_routes.dart — added automatically
+static const user = '/user';
+
+// app_pages.dart — added automatically
+GetPage(
+  name: AppRoutes.user,
+  page: () => const UserView(),
+  binding: UserBinding(),
+),
 ```
 
 ---
@@ -210,27 +225,25 @@ lib/features/user/presentation/user_profile/
 └── user_profile_exports.dart
 ```
 
----
-
-## After generating a feature
-
-1. Add a route in `lib/routes/app_routes.dart`:
+**Route registration is automatic.** The CLI updates both route files:
 
 ```dart
-static const user = '/user';
-```
+// app_routes.dart — added automatically
+static const userProfile = '/user/user_profile';
 
-2. Register the page in `lib/routes/app_pages.dart`:
-
-```dart
+// app_pages.dart — added automatically
 GetPage(
-  name: AppRoutes.user,
-  page: () => const UserView(),
-  binding: UserBinding(),
+  name: AppRoutes.userProfile,
+  page: () => const UserProfileView(),
+  binding: UserProfileBinding(),
 ),
 ```
 
-3. If models were generated, run build_runner:
+---
+
+## After generating a feature or page
+
+If models were generated, run build_runner to generate JSON serialization code:
 
 ```bash
 flutter pub run build_runner build --delete-conflicting-outputs
@@ -257,7 +270,7 @@ clean_getx/
     │   └── page_generator.dart
     ├── templates/
     │   ├── init_templates.dart
-    │   ├── templates.dart
+    │   ├── feature_templates.dart
     │   └── page_templates.dart
     └── utils/
         └── exceptions.dart
@@ -271,5 +284,9 @@ clean_getx/
   underscores, starting with a letter (e.g. `product_list`, `add_product_v2`).
 - The CLI will not overwrite an existing feature or page directory. Remove it
   manually first if you need to regenerate.
-- `--with-model` and `--with-repository` are both `true` by default. Pass
-  `--no-with-model` or `--no-with-repository` to skip either.
+- `--no-model` and `--no-repository` are both `false` by default (model and
+  repository are generated). Pass either flag to skip them.
+- Route constants use camelCase derived from the name
+  (e.g. `product_list` → `static const productList`).
+- If `lib/routes/app_routes.dart` or `app_pages.dart` do not exist (e.g. custom
+  project structure), route registration is silently skipped.
