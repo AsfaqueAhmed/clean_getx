@@ -5,10 +5,11 @@ import 'package:clean_getx/utils/exceptions.dart';
 
 class GenerateFeatureCommand extends Command {
   @override
-  final name = 'generate';
+  final name = 'feature';
 
   @override
-  final description = 'Generate a new feature with GetX clean architecture '
+  final description =
+      'Generate a new feature with GetX clean architecture '
       '(presentation grouped by page: binding/, controller/, view/)';
 
   @override
@@ -65,11 +66,15 @@ class GenerateFeatureCommand extends Command {
 
       print('\n📝 Next steps:');
       print('  1. Add a route + binding entry in your app routes file');
-      print('  2. Implement the controller logic in '
-          '${generator.featurePath}/presentation/$name/controller/${name}_controller.dart');
+      print(
+        '  2. Implement the controller logic in '
+        '${generator.featurePath}/presentation/$name/controller/${name}_controller.dart',
+      );
       if (withModel) {
         print('  3. Run build_runner to generate JSON serialization code:');
-        print('     flutter pub run build_runner build --delete-conflicting-outputs');
+        print(
+          '     flutter pub run build_runner build --delete-conflicting-outputs',
+        );
       }
       print('\n💡 Add more pages to this feature with:');
       print('     dart run bin/clean_getx.dart page -f $name -n <page_name>');
