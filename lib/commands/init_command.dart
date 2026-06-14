@@ -32,15 +32,17 @@ class InitCommand extends Command {
       negatable: false,
     );
     argParser.addFlag(
-      'sqlite',
-      help: 'Add SQLite support: generates database_service.dart & '
+      'no-sqlite',
+      help:
+          'Add SQLite support: generates database_service.dart & '
           'table_schemas.dart, and adds sqflite + path to pubspec',
       defaultsTo: false,
       negatable: false,
     );
     argParser.addFlag(
-      'storage',
-      help: 'Add local-storage support: generates local_storage_service.dart '
+      'no-storage',
+      help:
+          'Add local-storage support: generates local_storage_service.dart '
           'and adds get_storage to pubspec',
       defaultsTo: false,
       negatable: false,
@@ -50,12 +52,11 @@ class InitCommand extends Command {
   @override
   Future<void> run() async {
     final rawPath = argResults!['path'] as String;
-    final projectPath =
-        rawPath == '.' ? Directory.current.path : rawPath;
+    final projectPath = rawPath == '.' ? Directory.current.path : rawPath;
 
     final force = argResults!['force'] as bool;
-    final withSqlite = argResults!['sqlite'] as bool;
-    final withStorage = argResults!['storage'] as bool;
+    final withSqlite = !argResults!['no-sqlite'];
+    final withStorage = !argResults!['no-storage'];
 
     // ── sanity check ──────────────────────────────────────────────────────────
     final pubspec = File('$projectPath/pubspec.yaml');
@@ -70,7 +71,8 @@ class InitCommand extends Command {
 
     // ── confirmation when lib/ already has files ──────────────────────────────
     final libDir = Directory('$projectPath/lib');
-    final hasExistingFiles = libDir.existsSync() &&
+    final hasExistingFiles =
+        libDir.existsSync() &&
         libDir.listSync(recursive: true).whereType<File>().isNotEmpty;
 
     if (hasExistingFiles && !force) {

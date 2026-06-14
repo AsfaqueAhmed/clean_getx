@@ -28,14 +28,14 @@ class GenerateFeatureCommand extends Command {
       defaultsTo: 'lib/features',
     );
     argParser.addFlag(
-      'with-model',
+      'no-model',
       help: 'Generate a data model with JSON serialization',
-      defaultsTo: true,
+      defaultsTo: false,
     );
     argParser.addFlag(
-      'with-repository',
+      'no-repository',
       help: 'Generate abstract repository + Dio-based implementation',
-      defaultsTo: true,
+      defaultsTo: false,
     );
   }
 
@@ -43,8 +43,8 @@ class GenerateFeatureCommand extends Command {
   Future<void> run() async {
     final name = argResults!['name'] as String;
     final basePath = argResults!['path'] as String;
-    final withModel = argResults!['with-model'] as bool;
-    final withRepository = argResults!['with-repository'] as bool;
+    final withModel = !argResults!['no-model'];
+    final withRepository = !argResults!['no-repository'];
 
     try {
       final generator = FeatureGenerator(
