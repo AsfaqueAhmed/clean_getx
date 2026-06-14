@@ -1,7 +1,8 @@
 /// Templates for generating feature files in V2 structure
 /// (presentation grouped by page: binding/, controller/, view/)
-class Templates {
-  static String controller(String name, String pascalName) => '''import 'package:get/get.dart';
+class FeatureTemplates {
+  static String controller(String name, String pascalName) =>
+      '''import 'package:get/get.dart';
 
 class ${pascalName}Controller extends GetxController {
   // Observables
@@ -41,7 +42,8 @@ class ${pascalName}Controller extends GetxController {
 }
 ''';
 
-  static String binding(String name, String pascalName) => '''import 'package:get/get.dart';
+  static String binding(String name, String pascalName) =>
+      '''import 'package:get/get.dart';
 import '../controller/${name}_controller.dart';
 
 class ${pascalName}Binding extends Bindings {
@@ -54,7 +56,8 @@ class ${pascalName}Binding extends Bindings {
 }
 ''';
 
-  static String view(String name, String pascalName) => '''import 'package:flutter/material.dart';
+  static String view(String name, String pascalName) =>
+      '''import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../controller/${name}_controller.dart';
 
@@ -98,7 +101,8 @@ export 'controller/${name}_controller.dart';
 export 'view/${name}_view.dart';
 ''';
 
-  static String entity(String name, String pascalName) => '''import 'package:equatable/equatable.dart';
+  static String entity(String name, String pascalName) =>
+      '''import 'package:equatable/equatable.dart';
 
 class ${pascalName}Entity extends Equatable {
   final String id;
@@ -116,51 +120,37 @@ class ${pascalName}Entity extends Equatable {
 }
 ''';
 
-  static String model(String name, String pascalName) => '''import 'package:json_annotation/json_annotation.dart';
-import '../../domain/entities/${name}_entity.dart';
+  static String model(String name, String pascalName) =>
+      '''import '../../domain/entities/${name}_entity.dart';
 
-part '${name}_model.g.dart';
-
-@JsonSerializable()
-class ${pascalName}Model {
-  final String id;
-  final String title;
-  final String description;
+class ${pascalName}Model extends ${pascalName}Entity{
 
   ${pascalName}Model({
-    required this.id,
-    required this.title,
-    required this.description,
-  });
+    required super.id,
+    required super.title,
+    required super.description,
+  }) : super();
 
   factory ${pascalName}Model.fromJson(Map<String, dynamic> json) =>
-      _\$${pascalName}ModelFromJson(json);
+      ${pascalName}Model(
+        id: json['id'],
+        title: json['title'],
+        description: json['description'],
+      );
 
-  Map<String, dynamic> toJson() => _\$${pascalName}ModelToJson(this);
-
-  factory ${pascalName}Model.fromEntity(${pascalName}Entity entity) {
-    return ${pascalName}Model(
-      id: entity.id,
-      title: entity.title,
-      description: entity.description,
-    );
-  }
-
-  ${pascalName}Entity toEntity() {
-    return ${pascalName}Entity(
-      id: id,
-      title: title,
-      description: description,
-    );
-  }
+  Map<String, dynamic> toJson() => {
+    'id': id,
+    'title': title,
+    'description': description,
+  };
 }
 ''';
 
-  static String modelsExport(String name) =>
-      '''export '${name}_model.dart';
+  static String modelsExport(String name) => '''export '${name}_model.dart';
 ''';
 
-  static String domainRepository(String name, String pascalName) => '''import '../entities/${name}_entity.dart';
+  static String domainRepository(String name, String pascalName) =>
+      '''import '../entities/${name}_entity.dart';
 
 abstract class ${pascalName}Repository {
   Future<List<${pascalName}Entity>> fetch${pascalName}List();
@@ -171,7 +161,8 @@ abstract class ${pascalName}Repository {
 }
 ''';
 
-  static String repositoryImpl(String name, String pascalName) => '''import 'package:dio/dio.dart';
+  static String repositoryImpl(String name, String pascalName) =>
+      '''import 'package:dio/dio.dart';
 import '../../domain/repositories/${name}_repository.dart';
 import '../../domain/entities/${name}_entity.dart';
 import '../models/${name}_model.dart';
@@ -183,54 +174,27 @@ class ${pascalName}RepositoryImpl implements ${pascalName}Repository {
 
   @override
   Future<List<${pascalName}Entity>> fetch${pascalName}List() async {
-    try {
-      final response = await dio.get('/api/${name}');
-      final data = response.data as List;
-      return data
-          .map((json) => ${pascalName}Model.fromJson(json).toEntity())
-          .toList();
-    } catch (e) {
-      rethrow;
-    }
+    ///Need to implement
   }
 
   @override
   Future<${pascalName}Entity> get${pascalName}ById(String id) async {
-    try {
-      final response = await dio.get('/api/${name}/\$id');
-      return ${pascalName}Model.fromJson(response.data).toEntity();
-    } catch (e) {
-      rethrow;
-    }
+    ///Need to implement
   }
 
   @override
   Future<void> create${pascalName}(${pascalName}Entity entity) async {
-    try {
-      final model = ${pascalName}Model.fromEntity(entity);
-      await dio.post('/api/${name}', data: model.toJson());
-    } catch (e) {
-      rethrow;
-    }
+    ///Need to implement
   }
 
   @override
   Future<void> update${pascalName}(${pascalName}Entity entity) async {
-    try {
-      final model = ${pascalName}Model.fromEntity(entity);
-      await dio.put('/api/${name}/\${entity.id}', data: model.toJson());
-    } catch (e) {
-      rethrow;
-    }
+    ///Need to implement
   }
 
   @override
   Future<void> delete${pascalName}(String id) async {
-    try {
-      await dio.delete('/api/${name}/\$id');
-    } catch (e) {
-      rethrow;
-    }
+    ///Need to implement
   }
 }
 ''';

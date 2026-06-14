@@ -1,6 +1,6 @@
 import 'dart:io';
 import 'package:path/path.dart' as path;
-import 'package:clean_getx/templates/templates.dart';
+import 'package:clean_getx/templates/feature_templates.dart';
 import 'package:clean_getx/utils/exceptions.dart';
 
 /// Generates a new feature with the V2 structure:
@@ -103,47 +103,47 @@ class FeatureGenerator {
     // Presentation layer (V2: grouped by page)
     await _createFile(
       path.join(pres, 'controller', '${name}_controller.dart'),
-      Templates.controller(name, pascalName),
+      FeatureTemplates.controller(name, pascalName),
     );
     await _createFile(
       path.join(pres, 'binding', '${name}_binding.dart'),
-      Templates.binding(name, pascalName),
+      FeatureTemplates.binding(name, pascalName),
     );
     await _createFile(
       path.join(pres, 'view', '${name}_view.dart'),
-      Templates.view(name, pascalName),
+      FeatureTemplates.view(name, pascalName),
     );
     await _createFile(
       path.join(pres, '${name}_exports.dart'),
-      Templates.presentationExport(name, pascalName),
+      FeatureTemplates.presentationExport(name, pascalName),
     );
 
     // Domain layer
     await _createFile(
       path.join(featurePath, 'domain', 'entities', '${name}_entity.dart'),
-      Templates.entity(name, pascalName),
+      FeatureTemplates.entity(name, pascalName),
     );
 
     // Data layer
     if (withModel) {
       await _createFile(
         path.join(featurePath, 'data', 'models', '${name}_model.dart'),
-        Templates.model(name, pascalName),
+        FeatureTemplates.model(name, pascalName),
       );
       await _createFile(
         path.join(featurePath, 'data', 'models', 'models_export.dart'),
-        Templates.modelsExport(name),
+        FeatureTemplates.modelsExport(name),
       );
     }
 
     if (withRepository) {
       await _createFile(
         path.join(featurePath, 'domain', 'repositories', '${name}_repository.dart'),
-        Templates.domainRepository(name, pascalName),
+        FeatureTemplates.domainRepository(name, pascalName),
       );
       await _createFile(
         path.join(featurePath, 'data', 'repositories', '${name}_repository_impl.dart'),
-        Templates.repositoryImpl(name, pascalName),
+        FeatureTemplates.repositoryImpl(name, pascalName),
       );
     }
   }
