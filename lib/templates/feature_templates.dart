@@ -104,7 +104,7 @@ export 'view/${name}_view.dart';
   static String entity(String name, String pascalName) =>
       '''import 'package:equatable/equatable.dart';
 
-class ${pascalName}Entity extends Equatable {
+abstract class ${pascalName}Entity extends Equatable {
   final String id;
   final String title;
   final String description;
