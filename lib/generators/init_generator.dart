@@ -91,6 +91,7 @@ class InitGenerator {
     // inject required packages (preserve version if already present)
     deps.putIfAbsent('get', () => null);
     deps.putIfAbsent('intl', () => null);
+    deps.putIfAbsent('equatable', () => null);
     if (withSqlite) {
       deps.putIfAbsent('sqflite', () => null);
       deps.putIfAbsent('path', () => null);

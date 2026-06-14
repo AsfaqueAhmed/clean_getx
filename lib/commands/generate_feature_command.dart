@@ -13,7 +13,7 @@ class GenerateFeatureCommand extends Command {
       '(presentation grouped by page: binding/, controller/, view/)';
 
   @override
-  String get invocation => 'getx_cli generate -n <feature_name> [options]';
+  String get invocation => 'getx_cli feature -n <feature_name> [options]';
 
   GenerateFeatureCommand() {
     argParser.addOption(

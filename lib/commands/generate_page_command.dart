@@ -14,19 +14,19 @@ class GeneratePageCommand extends Command {
 
   @override
   String get invocation =>
-      'getx_cli page -f <feature_name> -n <page_name> [options]';
+      'getx_cli page -n <page_name> -f <feature_name> [options]';
 
   GeneratePageCommand() {
-    argParser.addOption(
-      'feature',
-      abbr: 'f',
-      help: 'The existing feature (parent folder) to add the page to',
-      mandatory: true,
-    );
     argParser.addOption(
       'name',
       abbr: 'n',
       help: 'Page name in snake_case (e.g. product_details, add_product)',
+      mandatory: true,
+    );
+    argParser.addOption(
+      'feature',
+      abbr: 'f',
+      help: 'The existing feature (parent folder) to add the page to',
       mandatory: true,
     );
     argParser.addOption(
